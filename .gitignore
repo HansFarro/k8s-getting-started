@@ -1,0 +1,17 @@
+### Terraform ###
+# Local .terraform directories
+**/.terraform/
+
+# Ignore .tfvars files
+*.tfvars*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Ignore override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*hcl*
