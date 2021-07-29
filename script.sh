@@ -9,7 +9,7 @@ function change_dir (){
 }
 
 echo "Cambiar a directorio de terraform"
-change_dir terraform/
+change_dir terraform
 echo "Inicializar Terraform"
 terraform init
 terraform fmt
