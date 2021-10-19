@@ -5,7 +5,7 @@ PATH=$(pwd)
 
 # FUNCIONES
 function change_dir (){
-  cd $PATH/$1
+  cd $PATH/gcp/$1
 }
 
 echo "Cambiar a directorio de terraform"
