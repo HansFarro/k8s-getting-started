@@ -8,3 +8,4 @@ This is a collection of Kubernetes files
 Run script gke-gloud.sh <br>
 ### Azure Kubernetes Service Script
 Run script aks-cloud.sh <br>
+bash aks-cloud.sh "<RESOURCE_GROUP>" "<NAME_CLUSTER>"

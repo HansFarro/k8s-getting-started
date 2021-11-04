@@ -15,3 +15,12 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 *hcl*
+
+# Ignore Certificate files
+*.csr*
+*.crt*
+*.key*
+
+# Ignore config files
+*config*
+*kubefile*
