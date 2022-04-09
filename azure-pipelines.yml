@@ -1,5 +1,4 @@
-trigger:
-  - develop
+trigger: none
 pool:
   vmImage: ubuntu-latest
 
@@ -105,8 +104,18 @@ stages:
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'demo.terraform.tfstate'
           - task: TerraformTaskV2@2
-            displayName: 'terraform validate'
+            displayName: Terraform Plan -Destroy
             inputs:
               provider: 'azurerm'
-              command: 'validate'
+              command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+              commandOptions: '-destroy -out aks.destroy.tfplan'
+              environmentServiceNameAzureRM: 'spHansRMConnection'
+          - task: TerraformTaskV2@2
+            displayName: Terraform Apply -Destroy
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+              commandOptions: '-destroy -auto-approve aks.destroy.tfplan'
+              environmentServiceNameAzureRM: 'spHansRMConnection'
