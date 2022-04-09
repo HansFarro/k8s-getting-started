@@ -2,8 +2,6 @@
 # Local .terraform directories
 **/.terraform/
 
-# Ignore .tfvars files
-*.tfvars*
 
 # .tfstate files
 *.tfstate

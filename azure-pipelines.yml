@@ -44,6 +44,6 @@ stages:
               inputs:
                 provider: 'azurerm'
                 command: 'plan'
-                commandOptions: '-chdir -auto-approve'
+                commandOptions: '-auto-approve'
                 workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
                 environmentServiceNameAzureRM: 'spHansRMConnection'
