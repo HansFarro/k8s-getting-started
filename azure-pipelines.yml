@@ -31,11 +31,12 @@ stages:
               provider: 'azurerm'
               command: 'validate'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
-  # - stage: Deploy
-  #   jobs:
-      # - job: Plan
-      #   continueOnError: false
-      #   steps:
+  - stage: Deploy
+    dependsOn: Validate
+    jobs:
+      - job: Plan
+        continueOnError: false
+        steps:
           - bash: ls -lah
             displayName: test
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
