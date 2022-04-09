@@ -5,7 +5,7 @@ pool:
 
 parameters:
   - name: actionToPerform
-    default: Deploy/Destroy
+    default: Deploy
     values:
       - Deploy
       - Destroy
