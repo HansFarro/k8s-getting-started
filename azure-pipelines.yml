@@ -13,12 +13,13 @@ stages:
             inputs:
               terraformVersion: 'latest'
           - bash: terraform --version
+            displayName: Terraform Version
           - task: TerraformTaskV2@2
             displayName: 'terraform init'
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: terraform/azure
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               backendServiceArm: 'spHansRMConnection'
               backendAzureRmResourceGroupName: 'RG-hansf'
               backendAzureRmStorageAccountName: 'hansterraformstate'
@@ -29,7 +30,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'validate'
-              workingDirectory: terraform/azure
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
   - stage: Deploy
     jobs:
       - job: Plan
@@ -41,5 +42,5 @@ stages:
                 provider: 'azurerm'
                 command: 'plan'
                 commandOptions: '-auto-approve'
-                workingDirectory: terraform/azure
+                workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
                 environmentServiceNameAzureRM: 'spHansRMConnection'
