@@ -40,6 +40,6 @@ stages:
               inputs:
                 provider: 'azurerm'
                 command: 'plan'
-                commandOptions: 'tfplan -auto-approve'
+                commandOptions: '-auto-approve'
                 workingDirectory: terraform/azure
                 environmentServiceNameAzureRM: 'spHansRMConnection'
