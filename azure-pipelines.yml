@@ -38,6 +38,7 @@ stages:
         steps:
             - bash: ls -lah
               displayName: test
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
             - task: TerraformTaskV2@2
               displayName: 'terraform plan -auto-approve'
               inputs:
