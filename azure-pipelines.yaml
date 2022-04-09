@@ -1,0 +1,16 @@
+trigger:
+- develop
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Validate
+  jobs:
+  - job: Validate
+    continueOnError: false
+    steps:
+      - bash: echo "Validate"
+      - task: TerraformInstaller@0
+        inputs:
+          terraformVersion: 'latest'
