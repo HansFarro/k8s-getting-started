@@ -12,7 +12,7 @@ parameters:
 
 stages:
   - stage: Validate
-    condition: and(eq('${{ parameters.actionToPerform }}', 'Deploy'))
+    condition: eq('${{ parameters.actionToPerform }}', 'Deploy')
     jobs:
       - job: Validate
         continueOnError: false
@@ -40,7 +40,7 @@ stages:
               command: 'validate'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
   - stage: Deploy
-    condition: and(eq('${{ parameters.actionToPerform }}', 'Deploy'))
+    condition: eq('${{ parameters.actionToPerform }}', 'Deploy')
     dependsOn: Validate
     jobs:
       - job: Deploy
@@ -83,7 +83,7 @@ stages:
               artifact: 'tfplan-aks'
               publishLocation: 'pipeline'
   - stage: Destroy
-    condition: and(eq('${{ parameters.actionToPerform }}', 'Destroy'))
+    condition: eq('${{ parameters.actionToPerform }}', 'Destroy')
     jobs:
       - job: Destroy
         continueOnError: false
