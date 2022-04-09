@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "2.81.0"
+      version = "2.99.0"
     }
   }
 }
@@ -13,15 +13,23 @@ provider "azurerm" {
 }
 
 # Variables
-variable "resource_group_name" {}
+variable "aks_name" {}
+variable "rg_aks" {
+  default = "rg-aks-test"
+}
 variable "location" {}
 
+resource "azurerm_resource_group" "rg-aks" {
+  name     = var.rg_aks
+  location = var.location
+}
+
 resource "azurerm_kubernetes_cluster" "example" {
-  name                = "example-aks1"
+  name                = var.aks_name
   location            = var.location
-  resource_group_name = var.resource_group_name
-  dns_prefix          = "exampleaks1"
-  
+  resource_group_name = azurerm_resource_group.rg-aks.name
+  dns_prefix          = var.aks_name
+
   identity {
     type = "SystemAssigned"
   }
@@ -29,10 +37,9 @@ resource "azurerm_kubernetes_cluster" "example" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_D2_v2"
+    vm_size    = "Standard_B2s"
   }
 }
-
 
 output "client_certificate" {
   value = azurerm_kubernetes_cluster.example.kube_config.0.client_certificate
