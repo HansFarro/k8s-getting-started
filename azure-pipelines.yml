@@ -3,8 +3,16 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+parameters:
+  - name: actionToPerform
+    default: Deploy/Destroy
+    values:
+      - Deploy
+      - Destroy
+
 stages:
   - stage: Validate
+    condition: and(eq('${{ parameters.actionToPerform }}', 'Deploy'),eq(variables.isMain, true))
     jobs:
       - job: Validate
         continueOnError: false
@@ -32,6 +40,7 @@ stages:
               command: 'validate'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
   - stage: Deploy
+    condition: and(eq('${{ parameters.actionToPerform }}', 'Deploy'),eq(variables.isMain, true))
     dependsOn: Validate
     jobs:
       - job: Deploy
@@ -52,10 +61,52 @@ stages:
             displayName: test
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
           - task: TerraformTaskV2@2
-            displayName: 'terraform plan -auto-approve'
+            displayName: 'terraform plan'
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-auto-approve'
+              commandOptions: '-out aks.tfplan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               environmentServiceNameAzureRM: 'spHansRMConnection'
+          - task: TerraformTaskV2@2
+            displayName: 'terraform apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              commandOptions: '-auto-approve aks.tfplan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+              environmentServiceNameAzureRM: 'spHansRMConnection'
+          - task: PublishPipelineArtifact@1
+            displayName: 'save terraform plan'
+            inputs:
+              targetPath: '$(System.DefaultWorkingDirectory)/terraform/azure/aks.tfplan'
+              artifact: 'tfplan-aks'
+              publishLocation: 'pipeline'
+  - stage: Destroy
+    condition: and(eq('${{ parameters.actionToPerform }}', 'Destroy'),eq(variables.isMain, true))
+    jobs:
+      - job: Destroy
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: 'latest'
+          - bash: terraform --version
+            displayName: Terraform Version
+          - task: TerraformTaskV2@2
+            displayName: 'terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+              backendServiceArm: 'spHansRMConnection'
+              backendAzureRmResourceGroupName: 'RG-hansf'
+              backendAzureRmStorageAccountName: 'hansterraformstate'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'demo.terraform.tfstate'
+          - task: TerraformTaskV2@2
+            displayName: 'terraform validate'
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
