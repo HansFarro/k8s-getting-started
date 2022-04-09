@@ -1,32 +1,44 @@
 trigger:
-- develop
+  - develop
 pool:
   vmImage: ubuntu-latest
 
 stages:
-- stage: Validate
-  jobs:
-  - job: Validate
-    continueOnError: false
-    steps:
-      - task: TerraformInstaller@0
-        inputs:
-          terraformVersion: 'latest'
-      - bash: terraform --version
-      - task: TerraformTaskV2@2
-        displayName: 'terraform init'
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          workingDirectory: terraform/azure
-          backendServiceArm: 'spHansRMConnection'
-          backendAzureRmResourceGroupName: 'RG-hansf'
-          backendAzureRmStorageAccountName: 'hansterraformstate'
-          backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'demo.terraform.tfstate'
-      - task: TerraformTaskV2@2
-        displayName: 'terraform validate'
-        inputs:
-          provider: 'azurerm'
-          command: 'validate'
-          workingDirectory: terraform/azure
+  - stage: Validate
+    jobs:
+      - job: Validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: 'latest'
+          - bash: terraform --version
+          - task: TerraformTaskV2@2
+            displayName: 'terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: terraform/azure
+              backendServiceArm: 'spHansRMConnection'
+              backendAzureRmResourceGroupName: 'RG-hansf'
+              backendAzureRmStorageAccountName: 'hansterraformstate'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'demo.terraform.tfstate'
+          - task: TerraformTaskV2@2
+            displayName: 'terraform validate'
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: terraform/azure
+  - stage: Deploy
+    jobs:
+      - job: Plan
+        continueOnError: false
+        steps:
+            - task: TerraformTaskV2@2
+              displayName: 'terraform plan -auto-approve'
+              inputs:
+                provider: 'azurerm'
+                command: 'plan'
+                commandOptions: 'tfplan -auto-approve'
+                environmentServiceNameAzureRM: 'spHansRMConnection'
