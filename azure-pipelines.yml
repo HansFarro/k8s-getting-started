@@ -31,8 +31,8 @@ stages:
               provider: 'azurerm'
               command: 'validate'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
-  - stage: Deploy
-    jobs:
+  # - stage: Deploy
+  #   jobs:
       - job: Plan
         continueOnError: false
         steps:
