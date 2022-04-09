@@ -36,11 +36,13 @@ stages:
       - job: Plan
         continueOnError: false
         steps:
+            - bash: ls -lah
+              displayName: test
             - task: TerraformTaskV2@2
               displayName: 'terraform plan -auto-approve'
               inputs:
                 provider: 'azurerm'
                 command: 'plan'
-                commandOptions: '-auto-approve'
+                commandOptions: '-chdir -auto-approve'
                 workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
                 environmentServiceNameAzureRM: 'spHansRMConnection'
