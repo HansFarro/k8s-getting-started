@@ -33,16 +33,16 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
   # - stage: Deploy
   #   jobs:
-      - job: Plan
-        continueOnError: false
-        steps:
-            - bash: ls -lah
-              displayName: test
+      # - job: Plan
+      #   continueOnError: false
+      #   steps:
+          - bash: ls -lah
+            displayName: test
+            workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+          - task: TerraformTaskV2@2
+            displayName: 'terraform plan -auto-approve'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
-            - task: TerraformTaskV2@2
-              displayName: 'terraform plan -auto-approve'
-              inputs:
-                provider: 'azurerm'
-                command: 'plan'
-                workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
-                environmentServiceNameAzureRM: 'spHansRMConnection'
+              environmentServiceNameAzureRM: 'spHansRMConnection'
