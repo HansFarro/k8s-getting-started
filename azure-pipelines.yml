@@ -34,9 +34,20 @@ stages:
   - stage: Deploy
     dependsOn: Validate
     jobs:
-      - job: Plan
+      - job: Deploy
         continueOnError: false
         steps:
+          - task: TerraformTaskV2@2
+            displayName: 'terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
+              backendServiceArm: 'spHansRMConnection'
+              backendAzureRmResourceGroupName: 'RG-hansf'
+              backendAzureRmStorageAccountName: 'hansterraformstate'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'demo.terraform.tfstate'
           - bash: ls -lah
             displayName: test
             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
@@ -45,5 +56,6 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              commandOptions: '-auto-approve'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               environmentServiceNameAzureRM: 'spHansRMConnection'
