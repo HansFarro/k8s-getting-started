@@ -1,6 +1,5 @@
 trigger:
 - develop
-
 pool:
   vmImage: ubuntu-latest
 
@@ -10,7 +9,24 @@ stages:
   - job: Validate
     continueOnError: false
     steps:
-      - bash: echo "Validate"
       - task: TerraformInstaller@0
         inputs:
           terraformVersion: 'latest'
+      - bash: terraform --version
+      - task: TerraformTaskV2@2
+        displayName: 'terraform init'
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: terraform/azure
+          backendServiceArm: 'spHansRMConnection'
+          backendAzureRmResourceGroupName: 'RG-hansf'
+          backendAzureRmStorageAccountName: 'hansterraformstate'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'demo.terraform.tfstate'
+      - task: TerraformTaskV2@2
+        displayName: 'terraform validate'
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
+          workingDirectory: terraform/azure
