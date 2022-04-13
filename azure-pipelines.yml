@@ -20,6 +20,7 @@ parameters:
   - name: aksName
     displayName: AKS cluster name
     type: string
+    default: akseastus01
 
 variables:
   RGNAME: 'rgeastus01'
