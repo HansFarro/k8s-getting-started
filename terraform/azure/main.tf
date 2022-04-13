@@ -14,7 +14,10 @@ variable "aks_name" {}
 variable "rg_aks" {
   default = "rg-aks-test"
 }
-variable "location" {}
+variable "location" {
+  default = "East US"
+}
+variable "node_pool_size" {}
 
 resource "azurerm_resource_group" "rg-aks" {
   name     = var.rg_aks
@@ -34,7 +37,7 @@ resource "azurerm_kubernetes_cluster" "example" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_B2s"
+    vm_size    = var.node_pool_size
   }
 }
 

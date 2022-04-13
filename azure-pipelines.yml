@@ -4,10 +4,27 @@ pool:
 
 parameters:
   - name: actionToPerform
+    displayName: Action to perform
     default: Deploy
     values:
       - Deploy
       - Destroy
+  - name: nodePoolSize
+    displayName: Node Pool Size
+    type: string
+    default: Standard_DS2_v2
+    values:
+      - Standard_DS2_v2
+      - Standard_D2s_v3
+      - Standard_D3_v2
+  - name: aksName
+    displayName: AKS cluster name
+    type: string
+
+variables:
+  RGNAME: 'rgeastus01'
+  SANAME: 'sceastus01'
+  BLOBCONTAINERNAME: 'blobeastus01'
 
 stages:
   - stage: Validate
@@ -28,9 +45,9 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               backendServiceArm: 'spHansRMConnection'
-              backendAzureRmResourceGroupName: 'RG-hansf'
-              backendAzureRmStorageAccountName: 'hansterraformstate'
-              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmResourceGroupName: $(RGNAME)
+              backendAzureRmStorageAccountName: $(SANAME)
+              backendAzureRmContainerName: $(BLOBCONTAINERNAME)
               backendAzureRmKey: 'demo.terraform.tfstate'
           - task: TerraformTaskV2@2
             displayName: 'terraform validate'
@@ -52,9 +69,9 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               backendServiceArm: 'spHansRMConnection'
-              backendAzureRmResourceGroupName: 'RG-hansf'
-              backendAzureRmStorageAccountName: 'hansterraformstate'
-              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmResourceGroupName: $(RGNAME)
+              backendAzureRmStorageAccountName: $(SANAME)
+              backendAzureRmContainerName: $(BLOBCONTAINERNAME)
               backendAzureRmKey: 'demo.terraform.tfstate'
           - bash: ls -lah
             displayName: test
@@ -64,7 +81,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              commandOptions: '-out aks.tfplan'
+              commandOptions: '-out aks.tfplan -input=false -var "node_pool_size=${{ parameters.nodePoolSize }}" -var "aks_name=${{ parameters.aksName }}"'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               environmentServiceNameAzureRM: 'spHansRMConnection'
           - task: TerraformTaskV2@2
@@ -99,9 +116,9 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
               backendServiceArm: 'spHansRMConnection'
-              backendAzureRmResourceGroupName: 'RG-hansf'
-              backendAzureRmStorageAccountName: 'hansterraformstate'
-              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmResourceGroupName: $(RGNAME)
+              backendAzureRmStorageAccountName: $(SANAME)
+              backendAzureRmContainerName: $(BLOBCONTAINERNAME)
               backendAzureRmKey: 'demo.terraform.tfstate'
           - task: TerraformTaskV2@2
             displayName: Terraform Plan -Destroy
@@ -109,7 +126,7 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/azure'
-              commandOptions: '-destroy -out aks.destroy.tfplan'
+              commandOptions: '-destroy -out aks.destroy.tfplan -input=false -var "node_pool_size=${{ parameters.nodePoolSize }}" -var "aks_name=${{ parameters.aksName }}"'
               environmentServiceNameAzureRM: 'spHansRMConnection'
           - task: TerraformTaskV2@2
             displayName: Terraform Apply -Destroy
